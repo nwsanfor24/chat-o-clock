@@ -5,9 +5,10 @@ import {
   InMemoryCache,
   ApolloProvider,
   useQuery,
+  useMutation,
   gql,
 } from "@apollo/client";
-import { Container } from "shards-react";
+import { Container, Row, Col, FormInput, Button } from "shards-react";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
@@ -21,6 +22,12 @@ const GET_MESSAGES = gql`
       content
       user
     }
+  }
+`;
+
+const POST_MESSAGES = gql`
+  mutation {
+    postMessage(user: $user, content: $content)
   }
 `;
 
@@ -74,9 +81,55 @@ const Messages = ({ user }) => {
 };
 
 const Chat = () => {
+  const [state, stateSet] = React.useState({
+    user: 'Jack',
+    content: '',
+  });
+  const onSend = () => {
+    if (state.content.length > 0) {
+
+    }
+    stateSet({
+      ...state,
+      content: '',
+    })
+  }
   return (
     <Container>
-      <Messages user="Jack" />
+      <Messages user={state.user} />
+      <Row>
+        <Col xs={2} style={{ padding: 0}}>
+          <FormInput 
+            label="User"
+            value={state.user}
+            onChange={(evt) => stateSet({
+              ...state,
+              user: evt.target.value,
+            })}
+          />
+        </Col>
+        <Col xs={8}>
+          <FormInput 
+            label="Content"
+            value={state.content}
+            onChange={(evt) => stateSet({
+              ...state,
+              content: evt.target.value,
+            })
+          }
+          onKeyUp={(evt) => {
+            if (evt.keyCode === 13) {
+              onSend();
+            }
+          }}
+          />
+        </Col>
+        <Col xs={2} style={{ padding: 0 }}>
+          <Button onClick={() => onSend()}>
+
+          </Button>
+        </Col>
+      </Row>
     </Container>
   );
 };
